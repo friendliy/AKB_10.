@@ -1,32 +1,70 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
-import Zocial from '@expo/vector-icons/Zocial';
+import React, { useState } from "react";
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image, Pressable } from "react-native";
+import Ionicons from "@expo/vector-icons/Ionicons";
+
+// Data mahasiswa lokal
+const mahasiswa = [
+  {
+    nama: "Alizha",
+    nim: "105841106722",
+    foto: "https://simak.unismuh.ac.id/upload/mahasiswa/105841106722_.jpg?1756047419",
+  },
+  {
+    nama: "Mahasiswa 2",
+    nim: "105841106822",
+    foto: "https://simak.unismuh.ac.id/upload/mahasiswa/105841106822_.jpg?1756047419",
+  },
+  {
+    nama: "Mahasiswa 3",
+    nim: "105841106922",
+    foto: "https://simak.unismuh.ac.id/upload/mahasiswa/105841106922_.jpg?1756047419",
+  },
+];
 
 export default function Index() {
-  const socialIcons: { name: React.ComponentProps<typeof Zocial>["name"]; label: string }[] = [
-    { name: "chrome", label: "Google Chrome" },
-    { name: "email", label: "Email Access" },
-    { name: "facebook", label: "Facebook Connect" },
-    { name: "github", label: "GitHub Code" },
-    { name: "google", label: "Google Account" },
-    { name: "instagram", label: "Instagram Feed" },
-    { name: "itunes", label: "Apple iTunes" },
-    { name: "linkedin", label: "LinkedIn Network" },
-    { name: "pinterest", label: "Pinterest Board" },
-    { name: "spotify", label: "Spotify Music" },
-  ];
+  const [selectedNim, setSelectedNim] = useState<string | null>(null);
+
+  if (selectedNim) {
+    const mhs = mahasiswa.find((m) => m.nim === selectedNim);
+    if (!mhs) {
+      return (
+        <View style={styles.wrapper}>
+          <Text>Mahasiswa tidak ditemukan.</Text>
+          <Pressable style={styles.backBtn} onPress={() => setSelectedNim(null)}>
+            <Ionicons name="arrow-back" size={20} color="#fff" />
+            <Text style={styles.backText}>Kembali</Text>
+          </Pressable>
+        </View>
+      );
+    }
+    return (
+      <View style={styles.wrapper}>
+        <Image source={{ uri: mhs.foto }} style={styles.foto} />
+        <Text style={styles.namaDetail}>{mhs.nama}</Text>
+        <Text style={styles.nim}>NIM: {mhs.nim}</Text>
+        <Pressable style={styles.backBtn} onPress={() => setSelectedNim(null)}>
+          <Ionicons name="arrow-back" size={20} color="#fff" />
+          <Text style={styles.backText}>Kembali</Text>
+        </Pressable>
+      </View>
+    );
+  }
 
   return (
-    <ScrollView style={styles.wrapper}>
-      <Text style={styles.header}>10 Icon</Text>
-      <View style={styles.iconGrid}>
-        {socialIcons.map((item, index) => (
-          <View key={index} style={styles.card}>
-            <Zocial name={item.name} size={36} color="#2c3e50" />
-            <Text style={styles.caption}>{item.label}</Text>
-          </View>
-        ))}
-      </View>
-    </ScrollView>
+    <View style={styles.wrapper}>
+      <Text style={styles.header}>Daftar Mahasiswa</Text>
+      <FlatList
+        data={mahasiswa}
+        keyExtractor={(item) => item.nim}
+        renderItem={({ item }) => (
+          <TouchableOpacity style={styles.item} onPress={() => setSelectedNim(item.nim)}>
+            <Ionicons name="person-circle-outline" size={28} color="#2980b9" style={{ marginRight: 10 }} />
+            <Text style={styles.nama}>{item.nama}</Text>
+          </TouchableOpacity>
+        )}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+      />
+    </View>
   );
 }
 
@@ -36,6 +74,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#eaf2f8",
     paddingHorizontal: 20,
     paddingTop: 20,
+    alignItems: "center",
   },
   header: {
     fontSize: 22,
@@ -44,29 +83,53 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 20,
   },
-  iconGrid: {
+  item: {
     flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-  },
-  card: {
-    width: "47%",
-    backgroundColor: "#ffffff",
     alignItems: "center",
-    paddingVertical: 20,
-    marginBottom: 20,
-    borderRadius: 14,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 4,
+    backgroundColor: "#fff",
+    padding: 16,
+    borderRadius: 10,
+    width: "100%",
   },
-  caption: {
-    marginTop: 10,
-    fontSize: 13,
-    fontWeight: "600",
+  nama: {
+    fontSize: 16,
+    color: "#222",
+    fontWeight: "500",
+  },
+  separator: {
+    height: 10,
+  },
+  foto: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    marginBottom: 24,
+    marginTop: 40,
+  },
+  namaDetail: {
+    fontSize: 22,
+    fontWeight: "700",
+    marginBottom: 8,
+    color: "#1a374d",
+  },
+  nim: {
+    fontSize: 16,
     color: "#34495e",
-    textAlign: "center",
+    marginBottom: 32,
+  },
+  backBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#2980b9",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+    marginTop: 20,
+  },
+  backText: {
+    color: "#fff",
+    fontWeight: "600",
+    marginLeft: 8,
+    fontSize: 16,
   },
 });
